@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyTravelStyle - Tu Asistente de Viajes Personalizado</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="shortcut icon" href="https://i.ibb.co/wCLgYV5/Whats-App-Image-2024-11-14-at-11-57-11-AM.jpg">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #6dd5ed, #2193b0);
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px 0;
+            text-align: center;
+            color: white;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 1.2em;
+            font-weight: 300;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            margin-top: 40px;
+            gap: 40px;
+        }
+
+        .intro {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .intro h2 {
+            color: #2193b0;
+            margin-bottom: 20px;
+        }
+
+        .intro p {
+            margin-bottom: 15px;
+        }
+
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .image-gallery img {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .image-gallery img:hover {
+            transform: scale(1.05);
+        }
+
+        #chat-container {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chat-box {
+            flex-grow: 1;
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+
+        .message {
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 20px;
+            max-width: 80%;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .message p {
+            margin-bottom: 10px;
+        }
+
+        .message p:last-child {
+            margin-bottom: 0;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user {
+            background-color: #2193b0;
+            color: white;
+            margin-left: auto;
+        }
+
+        .bot {
+            background-color: #e9e9e9;
+        }
+
+        #user-input {
+            display: flex;
+            padding: 20px;
+            background-color: white;
+        }
+
+        #user-message {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 30px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #2193b0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #1c7a94;
+        }
+
+        .collapse-btn {
+            display: none;
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            color: #2193b0;
+            font-size: 1.2em;
+            padding: 10px 0;
+            cursor: pointer;
+        }
+
+        .collapse-btn:after {
+            content: '\25BC';
+            float: right;
+        }
+
+        .collapse-btn.active:after {
+            content: '\25B2';
+        }
+
+        @media (max-width: 767px) {
+            .intro-content {
+                display: none;
+            }
+
+            .collapse-btn {
+                display: block;
+            }
+
+            .intro.expanded .intro-content {
+                display: block;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .content {
+                flex-direction: row;
+            }
+
+            .intro, #chat-container {
+                flex: 1;
+            }
+
+            .image-gallery img {
+                max-width: calc(33.333% - 20px);
+            }
+/* Estilos para el contenedor principal */
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50vh;
+}
+
+/* Estilos del botón y el contenedor */
+.collapsible {
+    width: 100%;
+    max-width: 600px;
+    background-color: #eaf7fc;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón de colapso */
+.collapsible-btn {
+    width: 100%;
+    padding: 15px;
+    background-color: #eaf7fc;
+    border-radius: 5px;
+    border-color: black;
+    color: #007ea7;
+    font-size: 18px;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 100px;
+}
+
+/* Flecha dentro del botón */
+.arrow {
+    font-size: 18px;
+    transition: transform 0.3s;
+}
+
+/* Contenido colapsable */
+.collapsible-content {
+    display: none; /* Oculto por defecto */
+    padding: 15px;
+    font-size: 16px;
+    color: #333;
+}
+
+/* Estilos en pantallas pequeñas */
+@media (max-width: 768px) {
+    .collapsible {
+        width: 90%;
+    }
+}
+.expanded .intro-content {
+    display: block;
+}
+.imagen_qr{
+    display: grid;
+    align-items: center;
+}
+
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://i.ibb.co/zZVTp70/Whats-App-Image-2024-11-14-at-11-57-11-AM-removebg-preview.png" alt="Logo_travel" width="150" height="100"/>
+        <h1>MyTravelStyle</h1>
+        <p class="tagline">La evolución del Turismo Personalizado</p>
+    </header>
+
+    <div class="container">
+        <div class="content">
+            <div class="intro">
+                <button class="collapse-btn">Información sobre MyTravelStyle</button>
+                <div class="intro-content">
+                    <p>Descubre el mundo de una forma única con MyTravelStyle, la plataforma que transforma tu forma de viajar. Gracias a nuestra avanzada tecnología apoyada con inteligencia artificial, te ofrecemos una experiencia totalmente personalizada, adaptada a tus gustos, intereses y necesidades.</p>
+                    <div class="image-gallery">
+                        <img src="https://wallpaperaccess.com/full/1319052.jpg" alt="Playa paradisíaca">
+                        <img src="https://img.freepik.com/fotos-premium/impresionante-vista-majestuosas-montanas-lago-pristino-rodeado-exuberante-vegetacion-montanas-elevan-tocar-cielo-sus-picos-nevados-suman-belleza-paisaje-ai_774778-1022.jpg" alt="Montañas majestuosas">
+                        <img src="https://th.bing.com/th/id/R.d453878b275fde76bbf19ad3077fa8b1?rik=04ImIhyet4nvkg&pid=ImgRaw&r=0" alt="Ciudad cosmopolita">
+                    </div>
+                    <p>¿Cómo lo hacemos? Nuestro chatbot interactúa contigo en tiempo real, aprendiendo tus preferencias para diseñar planes, recomendaciones y consejos justo a tu medida. Desde el destino perfecto hasta actividades exclusivas, cada viaje se convierte en una experiencia única, creada solo para ti.</p>
+                    <p>En MyTravelStyle la tecnología se pone al servicio de tu aventura, asegurando que cada momento sea especial, memorable y único. Disfruta de un viaje sin estrés, con planes que se ajustan exactamente a lo que buscas, sin perder la magia de explorar el mundo.</p>
+                    <p>¡Viajar nunca fue tan fácil ni tan personal! Comienza hoy mismo tu aventura y deja que nuestro chatbot sea tu mejor compañero de viaje.</p>
+                    <p><strong>Explora, sueña y vive lo mejor de cada destino, como nunca antes.</strong></p>
+                </div>
+            </div>
+
+            <div id="chat-container">
+                <div id="chat-box">
+                    <!-- Mensajes del chat se mostrarán aquí -->
+                </div>
+                <div id="user-input">
+                    <input type="text" id="user-message" placeholder="Pregunta sobre tu próximo viaje..." onkeypress="checkEnter(event)"/>
+                    <button onclick="sendMessage()">Enviar</button>
+                    <button onclick="resetConversation()">Reiniciar Conversación</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="center-container">
+        <!-- Objetivo General -->
+        <div class="collapsible">
+            <button class="collapsible-btn">
+                Objetivo General
+                <span class="arrow">&#9662;</span>
+            </button>
+            <div class="collapsible-content">
+                <p>Nos centramos en convertirnos en la plataforma de viajes líder en personalización, brindando experiencias únicas y memorables a cada usuario, a través de la innovación tecnológica y un profundo conocimiento de las preferencias individuales. Establecemos indicadores de desempeño (KPI) para medir el proceso, teniendo en cuenta la actualización de la base de datos.</p>
+            </div>
+        </div>
+    
+        <!-- Objetivos Específicos -->
+        <div class="collapsible">
+            <button class="collapsible-btn">
+                Objetivos Específicos
+                <span class="arrow">&#9662;</span>
+            </button>
+            <div class="collapsible-content">
+                <p><strong>1. Personalización avanzada:</strong> Desarrollamos algoritmos de inteligencia artificial para ofrecer recomendaciones de viaje altamente personalizadas, basadas en los gustos, intereses y comportamientos de cada usuario.</p>
+                <p><strong>2. Experiencia de usuario:</strong> Garantizamos una interfaz intuitiva, práctica y fácil de usar, disponible 24/7 para contestar cualquier duda o inquietud de los usuarios.</p>
+                <p><strong>3. Ampliación:</strong> Establecemos conexiones y alianzas estratégicas para ampliar la oferta de destinos, actividades y alojamientos.</p>
+                <p><strong>4. Posicionamiento:</strong> Aumentamos la visibilidad de la marca manteniendo la información actualizada, adaptando la estrategia a las tendencias del mercado y creando contenido de valor para posicionarnos como un referente en el sector turístico.</p>
+            </div>
+        </div>
+    
+        <!-- ¿Por qué la idea es innovadora? -->
+        <div class="collapsible">
+            <button class="collapsible-btn">
+                ¿Por qué la idea es innovadora?
+                <span class="arrow">&#9662;</span>
+            </button>
+            <div class="collapsible-content">
+                <p>La propuesta de MyTravelStyle destaca por su enfoque en la personalización a gran escala a través de la inteligencia artificial. Nuestro chatbot no solo recopila información, sino que interactúa con el usuario en tiempo real, aprendiendo de sus preferencias y adaptando las recomendaciones en consecuencia. Esto crea una experiencia más humana y personalizada. Además, la plataforma es innovadora al manejarse de manera local, garantizando la privacidad de los datos, a diferencia de muchas aplicaciones que no ofrecen políticas de seguridad robustas.</p>
+            </div>
+        </div>
+    </div>
+<div class="Imagen_qr">
+    <img src="https://i.ibb.co/MBvdtj6/frame-5.png">
+</div>
+    <script>
+        function addMessage(message, sender) {
+            const chatBox = document.getElementById("chat-box");
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", sender);
+            messageDiv.innerHTML = marked.parse(message);
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function sendMessage() {
+            const userMessage = document.getElementById("user-message").value;
+            if (userMessage.trim() === '') return;
+
+            // Mostrar mensaje del usuario
+            addMessage(userMessage, 'user');
+            document.getElementById("user-message").value = "";
+
+            // Mostrar mensaje de espera
+            const loadingMessageDiv = document.createElement("div");
+            loadingMessageDiv.classList.add("message", "bot");
+            loadingMessageDiv.textContent = "Esperando respuesta...";
+            document.getElementById("chat-box").appendChild(loadingMessageDiv);
+
+            fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: new URLSearchParams({ "user_message": userMessage })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("chat-box").removeChild(loadingMessageDiv);
+                addMessage(data.response, 'bot');
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                addMessage("Hubo un problema con la respuesta, intenta de nuevo.", "bot");
+            });
+        }
+
+        // Función para reiniciar la conversación
+        function resetConversation() {
+            fetch("/reset", { method: "POST" })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById("chat-box").innerHTML = "";
+                    addMessage(data.response, 'bot');
+                })
+                .catch(error => console.error("Error al reiniciar la conversación:", error));
+        }
+
+        // Función para enviar con Enter
+        function checkEnter(event) {
+            if (event.key === "Enter") sendMessage();
+        }
+        // JavaScript para el colapso y expansión
+document.querySelectorAll('.collapsible-btn').forEach(button => {
+    button.addEventListener('click', () => {
+        const content = button.nextElementSibling;
+        const arrow = button.querySelector('.arrow');
+
+        if (content.style.display === 'block') {
+            content.style.display = 'none';
+            arrow.style.transform = 'rotate(0deg)'; // Flecha hacia abajo
+        } else {
+            content.style.display = 'block';
+            arrow.style.transform = 'rotate(180deg)'; // Flecha hacia arriba
+        }
+    });
+});
+document.querySelector('.collapse-btn').addEventListener('click', function() {
+    const introSection = document.querySelector('.intro');
+    introSection.classList.toggle('expanded');
+});
+
+
+    </script>
+</body>
+</html>
